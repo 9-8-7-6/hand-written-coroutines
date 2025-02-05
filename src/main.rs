@@ -1,6 +1,4 @@
-mod http;
 mod future;
+mod http;
 
-fn main() {
-
-}
+fn main() {}
