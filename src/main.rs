@@ -56,8 +56,17 @@ impl Future for Coroutine {
     }
 }
 
-fn async_main() -> impl Future<Output = ()> {
-    Coroutine::new()
+// control state machine by ourself.
+// fn async_main() -> impl Future<Output = ()> {
+//     Coroutine::new()
+// }
+
+async fn async_main() {
+    println!("Program starting")
+    let txt = Http::get("/1000/HelloWorld").await;
+    println!("{txt}");
+    let txt2 = Http::get("500/HelloWorld2").await;
+    println!("{txt2}");
 }
 
 fn main() {
