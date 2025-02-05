@@ -1,9 +1,10 @@
 use std::time::Instant;
+use std::{thread, time::Duration};
 
 mod future;
 mod http;
-use crate::http::Http;
 use crate::future::{Future, PollState};
+use crate::http::Http;
 
 enum State {
     Start,
@@ -18,7 +19,7 @@ struct Coroutine {
 
 impl Coroutine {
     fn new() -> Self {
-        Self{
+        Self {
             state: State::Start,
         }
     }
@@ -40,7 +41,7 @@ impl Future for Coroutine {
                         self.state = State::Wait2(fut2);
                     }
                     PollState::NotReady => break PollState::NotReady,
-                }
+                },
                 State::Wait2(ref mut fut2) => match fut2.poll() {
                     PollState::Ready(txt2) => {
                         println!("{txt2}");
@@ -48,13 +49,26 @@ impl Future for Coroutine {
                         break PollState::Ready(());
                     }
                     PollState::NotReady => break PollState::NotReady,
-                }
+                },
                 State::Resolved => panic!("Polled a resolved future"),
             }
         }
     }
 }
 
-fn main() {
+fn async_main() -> impl Future<Output = ()> {
+    Coroutine::new()
+}
 
+fn main() {
+    let mut future = async_main();
+    loop {
+        match future.poll() {
+            PollState::NotReady => {
+                println!("Schedule other tasks");
+            }
+            PollState::Ready(_) => break,
+        }
+        thread::sleep(Duration::from_millis(100));
+    }
 }
