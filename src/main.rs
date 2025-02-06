@@ -62,7 +62,7 @@ impl Future for Coroutine {
 // }
 
 async fn async_main() {
-    println!("Program starting")
+    println!("Program starting");
     let txt = Http::get("/1000/HelloWorld").await;
     println!("{txt}");
     let txt2 = Http::get("500/HelloWorld2").await;
